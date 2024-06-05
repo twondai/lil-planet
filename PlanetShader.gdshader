@@ -1,5 +1,5 @@
 shader_type canvas_item;
-//fueled by crack saasdasd
+//fueled by crack
 
 #define wrap(v , high, low) mod(v - low, high - low) + low
 
