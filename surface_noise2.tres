@@ -1,16 +1,16 @@
 [gd_resource type="NoiseTexture2D" load_steps=2 format=3 uid="uid://b4elfsdsg15ca"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_wcg7h"]
-noise_type = 2
+noise_type = 0
 seed = 71
-frequency = 0.0012
-offset = Vector3(0, 158.75, 0)
+frequency = 0.0004
+offset = Vector3(319.15, 222.58, 0)
 fractal_type = 3
 fractal_octaves = 6
-fractal_lacunarity = 1.73
-fractal_gain = 1.805
-fractal_weighted_strength = 1.0
-fractal_ping_pong_strength = 0.745
+fractal_lacunarity = 2.16
+fractal_gain = 1.0
+fractal_weighted_strength = 0.5
+fractal_ping_pong_strength = 2.01
 cellular_distance_function = 2
 domain_warp_enabled = true
 domain_warp_amplitude = 14.54
@@ -20,8 +20,7 @@ domain_warp_fractal_lacunarity = 0.8
 domain_warp_fractal_gain = 0.8
 
 [resource]
-width = 2048
-height = 1024
+width = 1024
 generate_mipmaps = false
 seamless = true
 seamless_blend_skirt = 0.677

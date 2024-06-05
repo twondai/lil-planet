@@ -91,10 +91,7 @@ extends TextureRect
 #--------------------------------PHYSICAL--------------------------------
 @export_group("Physical")
 
-@export var raymarch_bumpiness:float:
-	set(v):
-		raymarch_bumpiness = v
-		set_uniform("raymarch_bumpiness",v)
+
 
 ##normal coefficient in the shader.
 @export var bumpiness:float:
@@ -139,7 +136,8 @@ extends TextureRect
 		surface_offset = v
 		set_uniform("offset",v)
 
-##how many times to resample the noise for finer details each time
+##how many times to resample the noise for finer details each time.
+##this is fucked up don't use it
 @export var noise_feedback:int:
 	set(v):
 		v = clamp(v,0,10)
@@ -190,4 +188,8 @@ var texture_pixel_size:Vector2:
 func set_uniform(name, v):
 	material.set_shader_parameter(name,v)
 
-
+#--------------------------------DEPRECATED--------------------------------
+#@export var raymarch_bumpiness:float:
+	#set(v):
+		#raymarch_bumpiness = v
+		#set_uniform("raymarch_bumpiness",v)

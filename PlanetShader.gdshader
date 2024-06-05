@@ -14,7 +14,6 @@ uniform sampler2D ice_gradient;
 uniform sampler2D cloud_gradient;
 
 uniform int noise_feedback = 1;
-uniform float feedback_soften = 10.;
 uniform float feedback_grain = 2;
 uniform float color_bands;
 
@@ -40,24 +39,26 @@ uniform float light_exp;
 
 const vec3 RENDER_CAM_POS = vec3(0,0,1);
 
+//bilinear interpolation
 float bilerp(float p1, float p2, float p3, float p4, float w1, float w2){
 	float c1 = mix(p1, p2, w1);
 	float c2 = mix(p3, p4, w1);
 	return mix(c1, c2, w2);
 }
 
+//rotate vector v by angle t in radians
 vec2 rotate(vec2 v, float t){
 	float c = cos(t);
 	float s = sin(t);
 	mat2 rot = mat2(vec2(c,s),vec2(-s,c));
 	return v * rot;
 }
-
+//i really don't know
 float get_dist(vec2 uv){
 	return RENDER_CAM_POS.z - (cos(uv.x) + cos(uv.y)) / 2.;
 }
 
-//maps a point on the screen to a point on the sphere surface, in texture
+//maps a point on the screen to a point on the sphere surface, in UV space
 //input range is -1 to 1
 vec2 map2sphere(vec2 vec){
 	return vec2((asin(vec.x / sqrt(1. - (vec.y * vec.y))) / (TAU) ) ,//RANGE -0.5 to 0.5
@@ -95,18 +96,17 @@ float get_elevation(vec2 p){
 void fragment() {
 	vec2 px = 1. / texture_size ;
 	vec3 col = vec3(1.);
-	vec2 uv = 2. * ( mod(1.*UV, vec2(1)) - center);//-1 TO 1, with repetition by multiplying and wrapping
+	vec2 uv = 2. * (UV - center);//normalized UV -1 to 1
 	//discard if farther than sphere radius
 	if (length(uv) > 1.){
 		discard;
 	}
 	float light_strength = 0.;
-	vec2 surf_uv = rotate(uv, axis);
+	vec2 surf_uv = rotate(uv, axis);//texture uv on sphere surface
 	surf_uv  = map2sphere(surf_uv);//map surf_uv
-	vec2 initial_map;
 	vec2 cloud_surf_uv = surf_uv ;//copy surf_uv for clouds. seperate transformation later
 	float longitude = 2.*surf_uv.y;// -1 = south pole, 1 = north pole
-	float temperature = pow(1. - abs(longitude),1.5) * temp_multiplier;//1 at equator, 0 at poles, before mult
+	
 	surf_uv = rotate(TIME * vec2(turn_rate,0),rotation) + offset + rotate(surf_uv,rotation);
 	surf_uv = wrap(surf_uv,vec2(0),vec2(1));
 
@@ -115,10 +115,11 @@ void fragment() {
 	
 
 	float t = get_elevation(surf_uv);
-	
+	float temperature = pow(1. - abs(longitude),1.5) * temp_multiplier;//1 at equator, 0 at poles, before mult
 	temperature -= pow(t,2.) * 0.9;//get colder at extreme elevations
 	
 	float dist = get_dist(uv);
+	//beware of crack smoking
 	vec3 p = RENDER_CAM_POS + vec3(uv,-dist);
 	vec3 sphere_normal = p;
 	p += sphere_normal * t * normal_coeff;
@@ -153,7 +154,7 @@ void fragment() {
 	}
 	
 	float cloud = texture(cloud_noise,cloud_surf_uv).x * cloudiness;
-	cloud *= smoothstep(0,0.13,cloud);
+	cloud *= smoothstep(0,0.05,cloud);//LITERALLY WTF
 	cloud = floor((cloud ) * cloud_layers) / cloud_layers;
 	float cloud_mix = min(cloud * cloud_opacity,1.);
 	col  = mix(col,texture(cloud_gradient,vec2(cloud,0.)).rgb,cloud_mix);
