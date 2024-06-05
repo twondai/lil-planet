@@ -1,0 +1,138 @@
+[gd_scene load_steps=20 format=3 uid="uid://0a1gomo22nb5"]
+
+[ext_resource type="Shader" path="res://PlanetShader.gdshader" id="1_o14n2"]
+[ext_resource type="Texture2D" uid="uid://b4elfsdsg15ca" path="res://surface_noise2.tres" id="2_4mm0m"]
+[ext_resource type="Texture2D" uid="uid://c1sf3q518eot6" path="res://icon.svg" id="2_invvn"]
+[ext_resource type="Script" path="res://PlanetDisplay.gd" id="4_1lvg8"]
+[ext_resource type="Shader" path="res://bruhbruh.gdshader" id="5_ma4ml"]
+
+[sub_resource type="Gradient" id="Gradient_fx3bh"]
+colors = PackedColorArray(0.633757, 0.633757, 0.633757, 1, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_bcxt5"]
+gradient = SubResource("Gradient_fx3bh")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_mrds8"]
+noise_type = 2
+frequency = 0.0041
+fractal_type = 3
+fractal_lacunarity = 5.335
+cellular_distance_function = 2
+cellular_return_type = 0
+domain_warp_enabled = true
+domain_warp_amplitude = 33.875
+domain_warp_frequency = 0.02
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_se5vd"]
+seamless = true
+seamless_blend_skirt = 0.786
+noise = SubResource("FastNoiseLite_mrds8")
+
+[sub_resource type="Gradient" id="Gradient_54rdx"]
+offsets = PackedFloat32Array(0.016129, 0.167401, 0.259912, 0.784141)
+colors = PackedColorArray(0.252497, 0.800994, 0, 1, 0.261906, 0.745713, 0.0463738, 1, 0.323447, 0.384141, 0.349689, 1, 0.391757, 0.426261, 0.406766, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_7frsm"]
+gradient = SubResource("Gradient_54rdx")
+
+[sub_resource type="Gradient" id="Gradient_kmpd5"]
+offsets = PackedFloat32Array(0, 0.246696, 0.867841)
+colors = PackedColorArray(0.922161, 0.946584, 0.97144, 1, 0.831845, 1, 0.996219, 1, 0.3876, 0.5738, 0.76, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_03osj"]
+gradient = SubResource("Gradient_kmpd5")
+
+[sub_resource type="Gradient" id="Gradient_peifp"]
+colors = PackedColorArray(1.44392e-06, 0, 0.588753, 1, 0, 0.345098, 0.619608, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_si0xa"]
+gradient = SubResource("Gradient_peifp")
+
+[sub_resource type="Gradient" id="Gradient_q6wsf"]
+offsets = PackedFloat32Array(0, 0.45815, 0.783871, 0.929515)
+colors = PackedColorArray(0.973867, 0.579536, 1.15514e-06, 1, 0.990221, 0.842665, 0.625807, 1, 0.302561, 0.202879, 0.170038, 1, 0.375428, 0.28616, 0.25675, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_3m6b5"]
+gradient = SubResource("Gradient_q6wsf")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_42tx7"]
+shader = ExtResource("1_o14n2")
+shader_parameter/texture_size = Vector2(512, 512)
+shader_parameter/noise_feedback = 1
+shader_parameter/feedback_soften = 0.14
+shader_parameter/feedback_grain = 0.655
+shader_parameter/color_bands = null
+shader_parameter/cloudiness = 0.86
+shader_parameter/cloud_opacity = 0.795
+shader_parameter/cloud_layers = 100.0
+shader_parameter/cloud_warp = 0.76
+shader_parameter/sea_level = 0.13
+shader_parameter/temp_multiplier = 0.32
+shader_parameter/freeze_temp = 0.08
+shader_parameter/rotation = null
+shader_parameter/offset = Vector2(-0.005, 0)
+shader_parameter/turn_rate = -0.025
+shader_parameter/cloud_speed = -0.015
+shader_parameter/axis = -0.51
+shader_parameter/normal_coeff = 0.12
+shader_parameter/light_angle = -5.735
+shader_parameter/light_dir = Vector3(4.105, -2.38, 0.79)
+shader_parameter/light_exp = 2.14
+shader_parameter/noise = ExtResource("2_4mm0m")
+shader_parameter/cloud_noise = SubResource("NoiseTexture2D_se5vd")
+shader_parameter/ocean_gradient = SubResource("GradientTexture1D_si0xa")
+shader_parameter/cool_land_gradient = SubResource("GradientTexture1D_7frsm")
+shader_parameter/warm_land_gradient = SubResource("GradientTexture1D_3m6b5")
+shader_parameter/ice_gradient = SubResource("GradientTexture1D_03osj")
+shader_parameter/cloud_gradient = SubResource("GradientTexture1D_bcxt5")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_cgug7"]
+shader = ExtResource("5_ma4ml")
+shader_parameter/brighten = 1.0
+shader_parameter/darken_exp = 1.0
+shader_parameter/grain_rotate = 0.835
+shader_parameter/grain = 0.0
+shader_parameter/octaves = 1
+shader_parameter/noise = ExtResource("2_4mm0m")
+
+[node name="Main" type="TextureRect"]
+material = SubResource("ShaderMaterial_42tx7")
+offset_right = 128.0
+offset_bottom = 128.0
+texture = ExtResource("2_invvn")
+script = ExtResource("4_1lvg8")
+temperature = 0.32
+freeze_temp = 0.08
+sea_level = 0.13
+warm_land_gradient = SubResource("GradientTexture1D_3m6b5")
+cool_land_gradient = SubResource("GradientTexture1D_7frsm")
+water_gradient = SubResource("GradientTexture1D_si0xa")
+ice_gradient = SubResource("GradientTexture1D_03osj")
+cloudiness = 0.86
+cloud_opacity = 0.795
+cloud_layers = 100
+cloud_speed = -0.015
+cloud_warp = 0.76
+cloud_gradient = SubResource("GradientTexture1D_bcxt5")
+bumpiness = 0.12
+light_exp = 2.14
+light_direction = Vector3(4.105, -2.38, 0.79)
+turn_speed = -0.025
+axis = -0.51
+surface_offset = Vector2(-0.005, 0)
+noise_feedback = 1
+feedback_grain = 0.655
+feedback_soften = 0.14
+color_bands = 50
+surface_texture = ExtResource("2_4mm0m")
+cloud_texture = SubResource("NoiseTexture2D_se5vd")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+visible = false
+material = SubResource("ShaderMaterial_cgug7")
+layout_mode = 0
+offset_right = 128.0
+offset_bottom = 128.0
+texture = ExtResource("2_invvn")
+
+[connection signal="resized" from="." to="." method="_on_resized"]
