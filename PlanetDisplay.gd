@@ -158,7 +158,8 @@ extends TextureRect
 		feedback_soften = v
 		set_uniform("feedback_soften",v)
 
-##The amount of different colors allowed. Useful to eliminate ugly bluring
+##The amount of different colors allowed. Useful to eliminate ugly bluring. 
+##Can also help give a more stylized look
 @export var color_bands:int:
 	set(v):
 		v = clamp(v,0.1,50)
