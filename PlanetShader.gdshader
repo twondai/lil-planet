@@ -123,8 +123,8 @@ void fragment() {
 	vec3 p = RENDER_CAM_POS + vec3(uv,-dist);
 	vec3 sphere_normal = p;
 	p += sphere_normal * t * normal_coeff;
-	vec3 p1 = p + dFdxFine(p);
-	vec3 p2 = p + dFdyFine(p);
+	vec3 p1 = p + dFdx(p);
+	vec3 p2 = p + dFdy(p);
 	vec3 C = normalize((p + p1 + p2) / vec3(3.0));
 	vec3 surf_normal = normalize(cross(p1 - p, p2 - p));
 	if( dot(surf_normal, C) <=  dot(-surf_normal,C)){
