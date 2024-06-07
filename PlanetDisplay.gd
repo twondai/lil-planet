@@ -71,7 +71,7 @@ extends TextureRect
 		cloud_layers = v
 		set_uniform("cloud_layers",v)
 		
-##cloud normal coefficient. Should be very small values like 0.01 for best result
+##cloud normal coefficient. Should be very small values like 0.005 for best result
 @export var cloud_bumpiness:float:
 	set(v):
 		v = clamp(v,0.,1.)
