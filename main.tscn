@@ -1,10 +1,9 @@
-[gd_scene load_steps=20 format=3 uid="uid://0a1gomo22nb5"]
+[gd_scene load_steps=18 format=3 uid="uid://0a1gomo22nb5"]
 
 [ext_resource type="Shader" path="res://PlanetShader.gdshader" id="1_o14n2"]
 [ext_resource type="Texture2D" uid="uid://b4elfsdsg15ca" path="res://surface_noise2.tres" id="2_4mm0m"]
 [ext_resource type="Texture2D" uid="uid://c1sf3q518eot6" path="res://icon.svg" id="2_invvn"]
 [ext_resource type="Script" path="res://PlanetDisplay.gd" id="4_1lvg8"]
-[ext_resource type="Shader" path="res://bruhbruh.gdshader" id="5_ma4ml"]
 
 [sub_resource type="Gradient" id="Gradient_fx3bh"]
 colors = PackedColorArray(0.633757, 0.633757, 0.633757, 1, 1, 1, 1, 1)
@@ -14,19 +13,30 @@ gradient = SubResource("Gradient_fx3bh")
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_mrds8"]
 noise_type = 2
-frequency = 0.0052
+seed = 41
+frequency = 0.0021
+offset = Vector3(127.66, 74.1, 0)
 fractal_type = 3
-fractal_lacunarity = 5.335
+fractal_octaves = 4
+fractal_lacunarity = 16.58
+fractal_gain = 0.545
+fractal_weighted_strength = 0.6
+fractal_ping_pong_strength = 1.395
 cellular_distance_function = 2
 cellular_return_type = 0
 domain_warp_enabled = true
 domain_warp_amplitude = 33.875
-domain_warp_frequency = 0.02
+domain_warp_frequency = 0.01
+domain_warp_fractal_octaves = 4
+domain_warp_fractal_lacunarity = 2.115
+domain_warp_fractal_gain = -4.025
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_se5vd"]
-width = 256
+width = 1024
+height = 2048
+generate_mipmaps = false
 seamless = true
-seamless_blend_skirt = 0.786
+seamless_blend_skirt = 1.0
 noise = SubResource("FastNoiseLite_mrds8")
 
 [sub_resource type="Gradient" id="Gradient_54rdx"]
@@ -37,8 +47,8 @@ colors = PackedColorArray(0.252497, 0.800994, 0, 1, 0.261906, 0.745713, 0.046373
 gradient = SubResource("Gradient_54rdx")
 
 [sub_resource type="Gradient" id="Gradient_kmpd5"]
-offsets = PackedFloat32Array(0, 0.246696, 0.867841)
-colors = PackedColorArray(0.922161, 0.946584, 0.97144, 1, 0.831845, 1, 0.996219, 1, 0.3876, 0.5738, 0.76, 1)
+offsets = PackedFloat32Array(0, 0.576779, 0.867841)
+colors = PackedColorArray(0.922161, 0.946584, 0.97144, 1, 0.831845, 1, 0.996219, 1, 0.607068, 0.745298, 0.887238, 1)
 
 [sub_resource type="GradientTexture1D" id="GradientTexture1D_03osj"]
 gradient = SubResource("Gradient_kmpd5")
@@ -60,24 +70,26 @@ gradient = SubResource("Gradient_q6wsf")
 shader = ExtResource("1_o14n2")
 shader_parameter/texture_size = Vector2(512, 512)
 shader_parameter/noise_feedback = 1
-shader_parameter/feedback_grain = 1.0
+shader_parameter/feedback_grain = 1.29
 shader_parameter/color_bands = null
-shader_parameter/cloudiness = 0.415
-shader_parameter/cloud_opacity = 3.415
+shader_parameter/cloudiness = 1.48
+shader_parameter/cloud_opacity = 0.0
+shader_parameter/cloud_threshhold = 0.8
 shader_parameter/cloud_layers = 100.0
-shader_parameter/cloud_warp = 0.76
-shader_parameter/sea_level = 0.5
-shader_parameter/temp_multiplier = 0.7
-shader_parameter/freeze_temp = 0.12
+shader_parameter/cloud_warp = 0.0
+shader_parameter/cloud_normal_coeff = 0.01
+shader_parameter/sea_level = 0.525
+shader_parameter/temp_multiplier = 0.73
+shader_parameter/freeze_temp = 0.0
 shader_parameter/rotation = null
-shader_parameter/offset = Vector2(0.97, 0.5)
-shader_parameter/turn_rate = -0.02
-shader_parameter/cloud_speed = -0.015
-shader_parameter/axis = -0.51
-shader_parameter/normal_coeff = 0.03
+shader_parameter/offset = Vector2(-7.075, 0.5)
+shader_parameter/turn_rate = -0.01
+shader_parameter/cloud_speed = -0.005
+shader_parameter/axis = -0.375
+shader_parameter/normal_coeff = 0.01
 shader_parameter/light_angle = -5.735
-shader_parameter/light_dir = Vector3(0.44, -2.075, 2.755)
-shader_parameter/light_exp = 2.14
+shader_parameter/light_dir = Vector3(1.68, -1.53, 4.27)
+shader_parameter/light_exp = 4.0
 shader_parameter/noise = ExtResource("2_4mm0m")
 shader_parameter/cloud_noise = SubResource("NoiseTexture2D_se5vd")
 shader_parameter/ocean_gradient = SubResource("GradientTexture1D_si0xa")
@@ -86,53 +98,34 @@ shader_parameter/warm_land_gradient = SubResource("GradientTexture1D_3m6b5")
 shader_parameter/ice_gradient = SubResource("GradientTexture1D_03osj")
 shader_parameter/cloud_gradient = SubResource("GradientTexture1D_bcxt5")
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_cgug7"]
-shader = ExtResource("5_ma4ml")
-shader_parameter/brighten = 1.0
-shader_parameter/darken_exp = 1.0
-shader_parameter/grain_rotate = 0.835
-shader_parameter/grain = 0.0
-shader_parameter/octaves = 1
-shader_parameter/noise = ExtResource("2_4mm0m")
-
 [node name="Main" type="TextureRect"]
 material = SubResource("ShaderMaterial_42tx7")
 offset_right = 128.0
 offset_bottom = 128.0
 texture = ExtResource("2_invvn")
 script = ExtResource("4_1lvg8")
-temperature = 0.7
-freeze_temp = 0.12
-sea_level = 0.5
+temperature = 0.73
+sea_level = 0.525
 warm_land_gradient = SubResource("GradientTexture1D_3m6b5")
 cool_land_gradient = SubResource("GradientTexture1D_7frsm")
 water_gradient = SubResource("GradientTexture1D_si0xa")
 ice_gradient = SubResource("GradientTexture1D_03osj")
-cloudiness = 0.415
-cloud_opacity = 3.415
-cloud_layers = 100
-cloud_speed = -0.015
-cloud_warp = 0.76
+cloudiness = 1.48
+cloud_layers = 11
+cloud_bumpiness = 0.01
+cloud_speed = -0.005
 cloud_gradient = SubResource("GradientTexture1D_bcxt5")
-bumpiness = 0.03
-light_exp = 2.14
-light_direction = Vector3(0.44, -2.075, 2.755)
-turn_speed = -0.02
-axis = -0.51
-surface_offset = Vector2(0.97, 0.5)
+bumpiness = 0.01
+light_exp = 4.0
+light_direction = Vector3(1.68, -1.53, 4.27)
+turn_speed = -0.01
+axis = -0.375
+surface_offset = Vector2(-7.075, 0.5)
 noise_feedback = 1
-feedback_grain = 1.0
+feedback_grain = 1.29
 feedback_soften = 1.0
-color_bands = 50
+color_bands = 15
 surface_texture = ExtResource("2_4mm0m")
 cloud_texture = SubResource("NoiseTexture2D_se5vd")
-
-[node name="TextureRect" type="TextureRect" parent="."]
-visible = false
-material = SubResource("ShaderMaterial_cgug7")
-layout_mode = 0
-offset_right = 128.0
-offset_bottom = 128.0
-texture = ExtResource("2_invvn")
 
 [connection signal="resized" from="." to="." method="_on_resized"]

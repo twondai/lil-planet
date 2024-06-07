@@ -19,8 +19,11 @@ uniform float color_bands;
 
 uniform float cloudiness = 0.3;
 uniform float cloud_opacity = 1.;
+uniform float cloud_threshhold = 0.8;
 uniform float cloud_layers = 100.;
 uniform float cloud_warp = 0;
+uniform float cloud_normal_coeff = 0.;
+
 uniform float sea_level;
 uniform float temp_multiplier;
 uniform float freeze_temp = 0.3;
@@ -121,6 +124,7 @@ void fragment() {
 	float dist = get_dist(uv);
 	//beware of crack smoking
 	vec3 p = RENDER_CAM_POS + vec3(uv,-dist);
+	vec3 cloud_p = p;
 	vec3 sphere_normal = p;
 	p += sphere_normal * t * normal_coeff;
 	vec3 p1 = p + dFdx(p);
@@ -134,6 +138,7 @@ void fragment() {
 	bool freeze = bool(step(temperature ,freeze_temp));
 	float depth;//used for color mixing
 	if(freeze){
+		t += sea_level;
 		depth = pow(t,2.);
 		col = texture(ice_gradient,vec2(depth,0.5)).rgb;
 	}
@@ -145,7 +150,8 @@ void fragment() {
 	}
 	else{// if above sea level
 		float depth = (t - sea_level)/(1. - sea_level);
-		depth = min(pow(depth * 1.,1.) / 1. ,1.);//slightly exaggerate landscape
+		float exaggerate = 2.;
+		depth = min(pow(depth * exaggerate,2.) / exaggerate ,1.);//slightly exaggerate landscape
 		depth = floor(depth * color_bands + 1.) / color_bands;
 		
 		col = texture(cool_land_gradient,vec2(depth,0.5)).rgb;
@@ -154,15 +160,29 @@ void fragment() {
 	}
 	
 	float cloud = texture(cloud_noise,cloud_surf_uv).x * cloudiness;
-	cloud *= smoothstep(0,0.05,cloud);//LITERALLY WTF
+	cloud_p += sphere_normal * cloud * cloud_normal_coeff;
+	vec3 cloud_p1 = cloud_p + dFdx(cloud_p);
+	vec3 cloud_p2 = cloud_p + dFdy(cloud_p);
+	vec3 cloud_C = normalize((cloud_p + cloud_p1 + cloud_p2) / vec3(3.0));
+	vec3 cloud_normal = normalize(cross(cloud_p1 - cloud_p, cloud_p2 - cloud_p));
+	if( dot(cloud_normal, cloud_C) <=  dot(-cloud_normal,cloud_C)){
+		cloud_normal = -cloud_normal;
+	}
+	
+	cloud *= smoothstep(0,0.05,cloud);//idk
 	cloud = floor((cloud ) * cloud_layers) / cloud_layers;
 	float cloud_mix = min(cloud * cloud_opacity,1.);
+	float cloud_light = max(dot(normalize(light_dir),cloud_normal),0.);
+	if(cloud > cloud_threshhold){
+		cloud_mix = 1.;
+	}
 	col  = mix(col,texture(cloud_gradient,vec2(cloud,0.)).rgb,cloud_mix);
 	
 	//mix between bumpy normal and smooth normal
-	float l1 = max(dot(normalize(light_dir),sphere_normal),0.);//smooth. this value also happens to make a nice weight for mixing
-	float l2 = max(dot(normalize(light_dir),surf_normal),0.);//bumpy
-	light_strength = mix(l1,l2,min(l1 * 0.5,1. - cloud_mix));//mix. i am extremely smart
+	float smooth_lighting = max(dot(normalize(light_dir),sphere_normal),0.);//smooth. this value also happens to make a nice weight for mixing
+	float bumpy_lighting = max(dot(normalize(light_dir),surf_normal),0.);//bumpy
+	bumpy_lighting = mix(bumpy_lighting,cloud_light,cloud_mix);
+	light_strength = mix(smooth_lighting,bumpy_lighting,min(smooth_lighting,1.) );//mix. i am extremely smart
 	
 	col = min(col,vec3(1));
 	col = mix(col * 0.03,col, pow(light_strength,light_exp) );
@@ -172,9 +192,6 @@ void fragment() {
 	//-----------debug lines. uncomment individual lines to draw some info---------------
 	//col = vec3(t);//raw elevation after processing
 	//col = vec3(mix(vec2(1.),surf_uv,step(max(abs(surf_uv.x),abs(surf_uv.y)),0.999)),0);//mapped surf_uv with outline
-
-	//col = vec3(abs(ray_data.x));
-	//col = vec3(abs(sdSphere(vec3(surf_uv,-1.),1.)));
 	
 	//col = texture(noise,wrap(5.*surf_uv ,vec2(0),vec2(1))).rgb;
 	//col = vec3(surf_uv,0);

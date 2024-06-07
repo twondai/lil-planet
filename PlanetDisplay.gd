@@ -58,18 +58,26 @@ extends TextureRect
 		v = clamp(v,0.,2.)
 		cloudiness = v
 		set_uniform("cloudiness",v)
-##cloud opacity
+##cloud opacity. leave at 0 as this system is being reworked
 @export var cloud_opacity:float:
 	set(v):
 		v = clamp(v,0.,10.)
 		cloud_opacity = v
 		set_uniform("cloud_opacity",v)
-##cloud opacity
+##Cloud color bands
 @export var cloud_layers:int:
 	set(v):
 		v = clamp(v,0.,100.)
 		cloud_layers = v
 		set_uniform("cloud_layers",v)
+		
+##cloud normal coefficient. Should be very small values like 0.01 for best result
+@export var cloud_bumpiness:float:
+	set(v):
+		v = clamp(v,0.,1.)
+		cloud_bumpiness = v
+		set_uniform("cloud_normal_coeff",v)
+
 ##Cloud revolution speed
 @export var cloud_speed:float:
 	set(v):
